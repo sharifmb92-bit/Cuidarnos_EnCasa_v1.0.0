@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <linearGradient id="homeBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1b4332" />
+      <stop offset="100%" stop-color="#2d6a4f" />
+    </linearGradient>
+    <linearGradient id="heartGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#e07a5f" />
+      <stop offset="100%" stop-color="#f28482" />
+    </linearGradient>
+  </defs>
+  
+  <rect width="512" height="512" rx="115" fill="url(#homeBg)" />
+  
+  <!-- Tejado acogedor de hogar -->
+  <path d="M 110 250 L 256 125 L 402 250" fill="none" stroke="#ffffff" stroke-width="26" stroke-linecap="round" stroke-linejoin="round" />
+  
+  <!-- Corazón cálido en el centro -->
+  <path d="M 256 385 C 256 385 155 315 155 245 C 155 208 184 185 215 185 C 235 185 248 196 256 210 C 264 196 277 185 297 185 C 328 185 357 208 357 245 C 357 315 256 385 256 385 Z" fill="url(#heartGrad)" />
+</svg>
