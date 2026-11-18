@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuidarnos en Casa_v 1.0.0</title>
+    
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#2d6a4f">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="icon" type="image/svg+xml" href="./icon.svg">
+    <link rel="apple-touch-icon" href="./icon.svg">
+
+    <style>
+        :root { 
+            --primary: #2d6a4f; 
+            --primary-light: #40916c;
+            --accent: #e07a5f; 
+            --bg: #f4f6f5; 
+            --card-bg: #ffffff;
+            --text: #1f2937;
+            --text-muted: #4A5568;
+            --soft-blue: #2b7a78;
+            --border: #dce3df;
+            --soft-green-bg: #e8f3ee;
+            --soft-warm-bg: #fdf3ef;
+        }
+
+        body.dark-mode {
+            --bg: #1e2224;
+            --card-bg: #2a2f32;
+            --text: #f3f4f6;
+            --text-muted: #9ca3af;
+            --border: #3f464a;
+            --soft-green-bg: #22352d;
+            --soft-warm-bg: #382924;
+        }
+
+        body { 
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+            background: var(--bg); 
+            margin: 0; 
+            color: var(--text); 
+            padding-bottom: 80px; 
+            transition: background 0.3s, color 0.3s;
+            line-height: 1.5;
+        }
+
+        header { 
+            background: linear-gradient(135deg, #1b4332, var(--primary)); 
+            color: white; 
+            padding: 24px 20px 20px; 
+            border-radius: 0 0 28px 28px; 
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            position: relative;
+        }
+
+        .version-tag {
+            font-size: 0.7rem;
+            opacity: 0.65;
+            letter-spacing: 0.5px;
+            display: block;
+            margin-top: 2px;
+        }
+
+        .header-controls {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .icon-btn {
+            background: rgba(255,255,255,0.18);
+            border: none;
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tabs { 
+            display: flex; 
+            justify-content: space-around; 
+            background: var(--card-bg); 
+            position: sticky; 
+            top: 0; 
+            z-index: 100; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .tab-btn { 
+            border: none; 
+            background: none; 
+            font-weight: 600; 
+            color: var(--text-muted); 
+            padding: 15px 8px; 
+            cursor: pointer; 
+            font-size: 0.82rem;
+            flex: 1;
+            transition: 0.2s;
+        }
+        
+        .tab-btn.active { 
+            color: var(--primary); 
+            border-bottom: 3px solid var(--primary); 
+        }
+
+        body.dark-mode .tab-btn.active {
+            color: #6ee7b7;
+            border-bottom-color: #6ee7b7;
+        }
+
+        .container { padding: 18px; display: none; max-width: 600px; margin: 0 auto; }
+        .container.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+        .card { 
+            background: var(--card-bg); 
+            border-radius: 20px; 
+            padding: 20px; 
+            margin-bottom: 18px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            border: 1px solid var(--border);
+        }
+
+        h2 { margin-top: 0; font-size: 1.12rem; color: var(--primary); display: flex; align-items: center; gap: 8px; }
+        body.dark-mode h2 { color: #6ee7b7; }
+
+        .btn { 
+            width: 100%; 
+            border: none; 
+            padding: 15px; 
+            border-radius: 14px; 
+            color: white; 
+            font-weight: 600; 
+            font-size: 0.95rem; 
+            margin-top: 10px; 
+            cursor: pointer; 
+            transition: 0.2s;
+        }
+        
+        .btn:active { transform: scale(0.98); }
+        .btn-primary { background: var(--primary); }
+        .btn-warm { background: var(--accent); }
+        .btn-water { background: var(--soft-blue); }
+        .btn-outline { background: transparent; border: 1.5px solid var(--border); color: var(--text); }
+
+        .badge-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin: 12px 0;
+        }
+
+        .habit-pill {
+            flex: 1 1 45%;
+            background: var(--soft-green-bg);
+            border: 1px solid var(--border);
+            padding: 12px;
+            border-radius: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.88rem;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+
+        .habit-pill.done {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .water-dots {
+            display: flex;
+            justify-content: space-between;
+            gap: 6px;
+            margin: 14px 0;
+        }
+
+        .water-dot {
+            flex: 1;
+            height: 36px;
+            border-radius: 10px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        .water-dot.filled {
+            background: var(--soft-blue);
+            color: white;
+            border-color: var(--soft-blue);
+        }
+
+        .meal-card {
+            background: var(--bg);
+            padding: 14px;
+            border-radius: 14px;
+            margin-bottom: 12px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .meal-label {
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            color: var(--primary);
+            letter-spacing: 0.5px;
+        }
+        body.dark-mode .meal-label { color: #6ee7b7; }
+
+        .spice-tip {
+            background: var(--soft-warm-bg);
+            padding: 12px 14px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            margin-top: 10px;
+            border-left: 4px solid var(--accent);
+        }
+
+        .input-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        input[type="number"], select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: var(--bg);
+            color: var(--text);
+            font-size: 0.95rem;
+            box-sizing: border-box;
+        }
+
+        .history-list {
+            margin-top: 12px;
+            max-height: 180px;
+            overflow-y: auto;
+            font-size: 0.85rem;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .breath-circle {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            background: var(--soft-green-bg);
+            border: 3px solid var(--primary);
+            margin: 20px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-weight: 700;
+            color: var(--primary);
+            transition: transform 4s ease-in-out;
+        }
+        body.dark-mode .breath-circle { color: #6ee7b7; }
+
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(120px);
+            background: #1f2937;
+            color: #ffffff;
+            padding: 12px 22px;
+            border-radius: 25px;
+            font-size: 0.88rem;
+            font-weight: 500;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease-out;
+            z-index: 3000;
+            text-align: center;
+            max-width: 85%;
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.65);
+            backdrop-filter: blur(4px);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 18px;
+            box-sizing: border-box;
+        }
+        .modal-content {
+            background: var(--card-bg);
+            padding: 24px;
+            border-radius: 22px;
+            max-width: 480px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+        }
+
+        footer {
+            text-align: center;
+            padding: 18px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+        .medbasha-stamp {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            opacity: 0.65;
+        }
+        .hexagon {
+            width: 14px;
+            height: 14px;
+            background: var(--primary);
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 7px;
+            color: white;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-controls">
+        <button class="icon-btn" onclick="toggleDarkMode()" aria-label="Cambiar tema">🌙</button>
+        <button class="icon-btn" onclick="openTutorial()" aria-label="Ayuda">?</button>
+    </div>
+    <h1 style="margin:0; font-size: 1.5rem; letter-spacing: 0.5px;">Cuidarnos en Casa</h1>
+    <p style="opacity: 0.9; margin: 4px 0 0; font-size: 0.85rem;">Paso a paso, sin sal ni azúcar añadido</p>
+    <span class="version-tag">v1.0.0</span>
+</header>
+
+<div class="tabs">
+    <button class="tab-btn active" onclick="openTab('hoy', this)">HOY</button>
+    <button class="tab-btn" onclick="openTab('comidas', this)">COMIDAS</button>
+    <button class="tab-btn" onclick="openTab('suave', this)">MOVIMIENTO</button>
+    <button class="tab-btn" onclick="openTab('salud', this)">TENSIÓN</button>
+</div>
+
+<!-- PESTAÑA 1: HOY -->
+<div id="hoy" class="container active">
+    <div class="card" style="background: var(--soft-warm-bg); border-color: var(--accent);">
+        <h2 style="color: var(--accent);">🧡 ¿Ganas de comer por ansiedad?</h2>
+        <p style="font-size: 0.88rem; margin: 0 0 10px;">No pasa nada. Antes de abrir la nevera o buscar algo dulce, hagamos una pausa de 2 minutos juntos.</p>
+        <button class="btn btn-warm" onclick="openCravingModal()">Necesito calmar el hambre ahora</button>
+    </div>
+
+    <div class="card">
+        <h2>🌱 Pequeños logros de hoy</h2>
+        <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0;">Cada gesto cuenta para bajar la tensión y sentirte más ligera:</p>
+        <div class="badge-group">
+            <div class="habit-pill" id="hab-sal" onclick="toggleHabit('sal')">
+                <span>🧂</span> <span>Sin sal añadida</span>
+            </div>
+            <div class="habit-pill" id="hab-azucar" onclick="toggleHabit('azucar')">
+                <span>🍬</span> <span>Cero azúcar</span>
+            </div>
+            <div class="habit-pill" id="hab-verdura" onclick="toggleHabit('verdura')">
+                <span>🥗</span> <span>Verdura en plato</span>
+            </div>
+            <div class="habit-pill" id="hab-paseo" onclick="toggleHabit('paseo')">
+                <span>🚶‍♀️</span> <span>5 min movimiento</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>💧 Agua para limpiar sodio</h2>
+        <p style="font-size: 0.82rem; color: var(--text-muted); margin: 0;">Beber agua ayuda al riñón a eliminar el exceso de sodio y controla el apetito.</p>
+        <div class="water-dots" id="waterDots"></div>
+        <p style="text-align: center; font-size: 0.85rem; margin: 0; font-weight: 600;">
+            <span id="waterCount">0</span> de 8 vasos hoy
+        </p>
+    </div>
+</div>
+
+<!-- PESTAÑA 2: COMIDAS EN CASA -->
+<div id="comidas" class="container">
+    <div class="card">
+        <h2>🍲 Menú Familiar de Hoy (<span id="nombreDia"></span>)</h2>
+        <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0;">Platos saciantes para cocinar una sola vez para toda la familia. Mucho sabor natural, sin sal ni azúcar.</p>
+        <div id="menuContenedor"></div>
+        
+        <div class="spice-tip">
+            <strong>🌿 Truco para dar sabor sin sal:</strong> Usa ajo en polvo, cebolla, limón exprimido, pimentón dulce, comino, pimienta negra, orégano o laurel. El paladar se acostumbra en 2 semanas.
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>🔄 Cambiar plato si no apetece</h2>
+        <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0;">Si hoy no tenéis esos ingredientes en casa, elige una opción rápida:</p>
+        <button class="btn btn-outline" onclick="showEmergencyIdea()">💡 Dame una idea rápida de 5 minutos</button>
+        <div id="emergencyResult" style="display:none; margin-top: 12px; padding: 12px; background: var(--soft-green-bg); border-radius: 12px; font-size: 0.88rem;"></div>
+    </div>
+</div>
+
+<!-- PESTAÑA 3: MOVIMIENTO SUAVE -->
+<div id="suave" class="container">
+    <div class="card">
+        <h2>🪑 Moverse sin cansarse (4 minutos)</h2>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">No hace falta sudar ni subir escaleras. Estos movimientos suaves activan la circulación, ayudan a bajar la tensión y mejoran la respiración:</p>
+        
+        <div class="meal-card">
+            <div class="meal-label">1. Sentada en una silla firme (1 min)</div>
+            <div>Levanta suavemente las puntas de los pies y luego los talones, como si pisaras un pedal. Mejora la circulación de las piernas.</div>
+        </div>
+
+        <div class="meal-card">
+            <div class="meal-label">2. Abrir el pecho para respirar mejor (1 min)</div>
+            <div>Sentada recta, lleva los hombros hacia atrás suavemente mientras tomas aire por la nariz, y suelta el aire despacio por la boca.</div>
+        </div>
+
+        <div class="meal-card">
+            <div class="meal-label">3. Marcha suave sentada (1 min)</div>
+            <div>Sube una rodilla unos centímetros del asiento y bájala despacio, alternando piernas a tu ritmo, sin forzar la espalda.</div>
+        </div>
+
+        <div class="meal-card">
+            <div class="meal-label">4. Paseo por el pasillo tras comer (2-5 min)</div>
+            <div>Caminar muy despacio por casa después de almorzar ayuda a que el azúcar no suba de golpe y facilita la digestión.</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>🌬️ Respiración para bajar la tensión</h2>
+        <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0;">Respirar lento envía una señal directa al corazón para que lata más tranquilo.</p>
+        <div class="breath-circle" id="breathCircle">Pulsa iniciar</div>
+        <button class="btn btn-primary" id="breathBtn" onclick="toggleBreathing()">Iniciar 1 minuto de calma</button>
+    </div>
+</div>
+
+<!-- PESTAÑA 4: TENSIÓN Y SEGUIMIENTO MÉDICO -->
+<div id="salud" class="container">
+    <div class="card">
+        <h2>🩺 Registro de Tensión Arterial</h2>
+        <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0;">Apunta las tomas de casa para enseñárselas a tu médico en la próxima visita.</p>
+        <div class="input-row">
+            <input type="number" id="sysInput" placeholder="Alta (ej. 135)">
+            <input type="number" id="diaInput" placeholder="Baja (ej. 85)">
+        </div>
+        <button class="btn btn-primary" onclick="saveBP()">Guardar toma de tensión</button>
+        <div class="history-list" id="bpHistory"></div>
+    </div>
+
+    <div class="card">
+        <h2>⚖️ Seguimiento de Peso (Opcional)</h2>
+        <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0;">Solo si os lo pide la nutricionista (recomendado máximo 1 vez por semana).</p>
+        <div class="input-row">
+            <input type="number" step="0.1" id="weightInput" placeholder="Peso en kg">
+            <button class="btn btn-water" style="margin-top:0; width: auto; padding: 0 20px;" onclick="saveWeight()">Guardar</button>
+        </div>
+        <div class="history-list" id="weightHistory"></div>
+    </div>
+
+    <div class="card">
+        <h2>💾 Copia de seguridad</h2>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0;">Guarda tus registros en un archivo para no perderlos nunca.</p>
+        <button class="btn btn-outline" onclick="exportBackup()">Exportar datos para el médico (JSON)</button>
+    </div>
+</div>
+
+<!-- MODAL DE BIENVENIDA / AYUDA -->
+<div id="welcomeModal" class="modal">
+    <div class="modal-content">
+        <h2 style="margin-top:0;">Bienvenidos a Cuidarnos en Casa 🏡</h2>
+        <p style="font-size: 0.9rem; color: var(--text-muted);">
+            Esta aplicación es vuestro apoyo diario en casa para acompañar las indicaciones de vuestro médico y nutricionista:
+        </p>
+        <ul style="font-size: 0.88rem; padding-left: 18px; color: var(--text);">
+            <li style="margin-bottom: 8px;"><strong>Sin prohibiciones extremas:</strong> Comidas caseras ricas, con mucha verdura y especias naturales en lugar de sal.</li>
+            <li style="margin-bottom: 8px;"><strong>Ayuda contra la ansiedad:</strong> Usa el botón naranja de la pantalla principal cuando aparezcan ganas impulsivas de comer.</li>
+            <li style="margin-bottom: 8px;"><strong>Sin fatiga:</strong> Ejercicios suaves de pocos minutos sentada para cuidar el corazón y las articulaciones.</li>
+            <li><strong>Control médico:</strong> Apunta la tensión arterial para llevar un historial claro a consulta.</li>
+        </ul>
+        <button class="btn btn-primary" style="background: #22c55e;" onclick="closeTutorial()">¡Entendido!</button>
+    </div>
+</div>
+
+<!-- MODAL ANTI-ANSIEDAD -->
+<div id="cravingModal" class="modal">
+    <div class="modal-content">
+        <h2 style="color: var(--accent); margin-top:0;">🧡 Hagamos esto juntos</h2>
+        <p style="font-size: 0.9rem;">Cuando el cuerpo pide azúcar o comida de golpe, suele ser cansancio, sed o estrés. Sigue estos 3 pasos suaves:</p>
+        
+        <div style="background: var(--bg); padding: 12px; border-radius: 12px; margin-bottom: 10px; font-size: 0.88rem;">
+            <strong>Paso 1:</strong> Bebe ahora un vaso grande de agua fresca despacio.
+        </div>
+        <div style="background: var(--bg); padding: 12px; border-radius: 12px; margin-bottom: 10px; font-size: 0.88rem;">
+            <strong>Paso 2:</strong> Espera 5 minutos. Mientras tanto, haz 4 respiraciones profundas soltando los hombros.
+        </div>
+        <div style="background: var(--soft-green-bg); padding: 12px; border-radius: 12px; margin-bottom: 14px; font-size: 0.88rem;">
+            <strong>Paso 3 (Si sigue el hambre real):</strong> Elige una de estas opciones que llenan el estómago sin subir la tensión ni el azúcar:
+            <ul style="margin: 6px 0 0; padding-left: 18px;">
+                <li>Un yogur natural sin azúcar con canela por encima (sabe dulce sin tener azúcar).</li>
+                <li>Un puñado pequeño de nueces o almendras crudas (sin sal).</li>
+                <li>Rodajas de pepino o zanahoria con un chorrito de limón.</li>
+                <li>Una infusión templada (manzanilla, tila o rooibos con canela).</li>
+            </ul>
+        </div>
+        <button class="btn btn-primary" onclick="closeCravingModal()">Gracias, me siento más tranquila</button>
+    </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<footer>
+    <div class="medbasha-stamp">
+        <div class="hexagon">MB</div>
+        <span>medbasha</span>
+    </div>
+</footer>
+
+<script>
+    const DB_NAME = 'CuidarnosCasaDB';
+    const DB_VERSION = 1;
+    let db;
+
+    const hoyStr = new Date().toISOString().split('T')[0];
+
+    const menusFamiliares = {
+        "Lunes": {
+            desayuno: "Tostada de pan integral sin sal con aceite de oliva virgen extra y tomate natural rallado + infusión o café solo/con leche.",
+            mediaManana: "1 manzana o pera + 4 nueces al natural (sin sal).",
+            almuerzo: "Lentejas estofadas con mucha verdura (zanahoria, calabacín, pimiento, laurel y comino, sin chorizo ni sal) + ensalada verde.",
+            merienda: "Yogur natural sin azúcar con un toque de canela.",
+            cena: "Tortilla francesa de 2 huevos con espinacas frescas y ajo + crema suave de calabacín."
+        },
+        "Martes": {
+            desayuno: "Bol de yogur natural sin azúcar con copos de avena suave y unas rodajas de plátano.",
+            mediaManana: "1 mandarina o kiwi + vaso de agua.",
+            almuerzo: "Pechuga de pollo a la plancha adobada con limón, ajo y orégano + pimientos asados y un poco de arroz integral.",
+            merienda: "Infusión de rooibos con canela + 5 almendras crudas.",
+            cena: "Merluza o pescado blanco al horno con cebolla, tomate en rodajas y perejil."
+        },
+        "Miércoles": {
+            desayuno: "Tostada integral sin sal con queso fresco bajo en sodio y un chorrito de aceite de oliva.",
+            mediaManana: "1 pieza de fruta de temporada.",
+            almuerzo: "Garbanzos salteados con espinacas, ajo, pimentón dulce y huevo duro picado.",
+            merienda: "Un vaso de leche o bebida vegetal sin azúcar con cacao puro (sin azúcar).",
+            cena: "Crema de verduras casera (puerro, zanahoria, calabaza) + filete de pavo a la plancha."
+        },
+        "Jueves": {
+            desayuno: "Revuelto de 1 huevo con tomate natural y pan integral sin sal.",
+            mediaManana: "1 yogur natural sin azúcar.",
+            almuerzo: "Salmón o caballa a la plancha (rico en Omega-3 para cuidar la tensión) con brócoli al vapor y patata cocida.",
+            merienda: "1 naranja en gajos con canela.",
+            cena: "Ensalada completa con brotes verdes, tomate, pepino, atún al natural (bajo en sal) y aguacate."
+        },
+        "Viernes": {
+            desayuno: "Tostada integral sin sal con aguacate machacado y unas gotas de limón.",
+            mediaManana: "Un puñadito de frutos secos al natural (sin sal ni fritos).",
+            almuerzo: "Pollo guisado con champiñones, cebolla, zanahoria y hierbas provenzales + ensalada de tomate.",
+            merienda: "1 manzana asada al microondas con canela (postre dulce natural sin azúcar).",
+            cena: "Caldo casero de verduras sin pastillas de avecrem + revuelto de calabacín y cebolla."
+        },
+        "Sábado": {
+            desayuno: "Tortita casera rápida (1 plátano maduro machacado + 1 huevo + canela, hecho en sartén).",
+            mediaManana: "Infusión y 1 pieza de fruta.",
+            almuerzo: "Arroz caldoso con verduras variadas, sepia o pollo y cúrcuma/azafrán.",
+            merienda: "Yogur natural sin azúcar con semillas de chía o lino.",
+            cena: "Parrillada de verduras (berenjena, calabacín, espárragos) con queso fresco a la plancha."
+        },
+        "Domingo": {
+            desayuno: "Tostada integral sin sal con tomate, aceite de oliva y un poco de pavo natural bajo en sal.",
+            mediaManana: "1 pieza de fruta fresca.",
+            almuerzo: "Pescado al horno sobre cama de patata panadera y cebolla con limón y ajo + ensalada grande.",
+            merienda: "Infusión relajante + 3 nueces.",
+            cena: "Cena ligera: Puré de calabacín y puerro + 1 huevo pasado por agua o cocido."
+        }
+    };
+
+    const ideasRapidas = [
+        "Ensalada templada de bote de garbanzos cocidos (bien lavados bajo el grifo para quitar la sal de conserva) con tomate, pepino, cebolla y aceite de oliva.",
+        "Tortilla de 2 huevos con calabacín rallado (se hace en 4 minutos en sartén) + un tomate aliñado con orégano.",
+        "Filete de pescado congelado directo a la plancha con ajo y perejil + bolsa de verduras listas para microondas.",
+        "Yogur natural sin azúcar mezclado con avena, canela y manzana troceada para una cena rápida si no hay hambre."
+    ];
+
+    function initDB() {
+        return new Promise((resolve, reject) => {
+            const req = indexedDB.open(DB_NAME, DB_VERSION);
+            req.onerror = () => reject('Error IndexedDB');
+            req.onsuccess = (e) => { db = e.target.result; resolve(db); };
+            req.onupgradeneeded = (e) => {
+                const database = e.target.result;
+                if (!database.objectStoreNames.contains('appData')) {
+                    database.createObjectStore('appData', { keyPath: 'id' });
+                }
+            };
+        });
+    }
+
+    async function saveData(key, value) {
+        if (!db) await initDB();
+        return new Promise((resolve) => {
+            const tx = db.transaction('appData', 'readwrite');
+            tx.objectStore('appData').put({ id: key, value });
+            tx.oncomplete = () => resolve();
+        });
+    }
+
+    async function loadData(key) {
+        if (!db) await initDB();
+        return new Promise((resolve) => {
+            const tx = db.transaction('appData', 'readonly');
+            const req = tx.objectStore('appData').get(key);
+            req.onsuccess = () => resolve(req.result ? req.result.value : null);
+            req.onerror = () => resolve(null);
+        });
+    }
+
+    async function initApp() {
+        if ('storage' in navigator && 'persist' in navigator.storage) {
+            navigator.storage.persist();
+        }
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js');
+        }
+
+        await initDB();
+
+        const seen = await loadData('tutorialSeen');
+        if (!seen) {
+            document.getElementById('welcomeModal').style.display = 'flex';
+        }
+
+        const dark = await loadData('darkMode');
+        if (dark) document.body.classList.add('dark-mode');
+
+        await loadDailyState();
+        renderMenu();
+        await renderHistory();
+    }
+
+    async function loadDailyState() {
+        let daily = await loadData('daily_' + hoyStr);
+        if (!daily) {
+            daily = { water: 0, habits: { sal: false, azucar: false, verdura: false, paseo: false } };
+            await saveData('daily_' + hoyStr, daily);
+        }
+
+        // Render vasos de agua
+        const dotsContainer = document.getElementById('waterDots');
+        dotsContainer.innerHTML = '';
+        for (let i = 1; i <= 8; i++) {
+            const dot = document.createElement('div');
+            dot.className = 'water-dot' + (i <= daily.water ? ' filled' : '');
+            dot.innerText = '💧';
+            dot.onclick = () => setWater(i);
+            dotsContainer.appendChild(dot);
+        }
+        document.getElementById('waterCount').innerText = daily.water;
+
+        // Render hábitos
+        ['sal', 'azucar', 'verdura', 'paseo'].forEach(h => {
+            const el = document.getElementById('hab-' + h);
+            if (daily.habits[h]) el.classList.add('done');
+            else el.classList.remove('done');
+        });
+    }
+
+    async function setWater(num) {
+        let daily = await loadData('daily_' + hoyStr);
+        daily.water = (daily.water === num) ? num - 1 : num;
+        await saveData('daily_' + hoyStr, daily);
+        await loadDailyState();
+        if (daily.water > 0) showToast('¡Muy bien! Vaso registrado 💧');
+    }
+
+    async function toggleHabit(habitKey) {
+        let daily = await loadData('daily_' + hoyStr);
+        daily.habits[habitKey] = !daily.habits[habitKey];
+        await saveData('daily_' + hoyStr, daily);
+        await loadDailyState();
+        if (daily.habits[habitKey]) {
+            showToast('¡Un gran paso para cuidar tu tensión! 🌱');
+        }
+    }
+
+    function renderMenu() {
+        const dias = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
+        const hoyNombre = dias[new Date().getDay()];
+        document.getElementById('nombreDia').innerText = hoyNombre;
+        const m = menusFamiliares[hoyNombre];
+
+        document.getElementById('menuContenedor').innerHTML = `
+            <div class="meal-card"><div class="meal-label">🌅 Desayuno</div><div>${m.desayuno}</div></div>
+            <div class="meal-card"><div class="meal-label">🍎 Media Mañana</div><div>${m.mediaManana}</div></div>
+            <div class="meal-card"><div class="meal-label">☀️ Almuerzo en familia</div><div>${m.almuerzo}</div></div>
+            <div class="meal-card"><div class="meal-label">🍵 Merienda</div><div>${m.merienda}</div></div>
+            <div class="meal-card"><div class="meal-label">🌙 Cena ligera</div><div>${m.cena}</div></div>
+        `;
+    }
+
+    function showEmergencyIdea() {
+        const res = document.getElementById('emergencyResult');
+        const randomIdea = ideasRapidas[Math.floor(Math.random() * ideasRapidas.length)];
+        res.innerHTML = '<strong>Opción exprés saludable:</strong> ' + randomIdea;
+        res.style.display = 'block';
+    }
+
+    // Respiración guiada
+    let breathTimer = null;
+    function toggleBreathing() {
+        const circle = document.getElementById('breathCircle');
+        const btn = document.getElementById('breathBtn');
+        if (breathTimer) {
+            clearInterval(breathTimer);
+            breathTimer = null;
+            circle.style.transform = 'scale(1)';
+            circle.innerText = 'Pulsa iniciar';
+            btn.innerText = 'Iniciar 1 minuto de calma';
+            return;
+        }
+
+        btn.innerText = 'Detener';
+        let phase = 0;
+        const runPhase = () => {
+            if (phase === 0) {
+                circle.innerText = 'Toma aire\nsuave (4s)';
+                circle.style.transform = 'scale(1.25)';
+                phase = 1;
+            } else {
+                circle.innerText = 'Suelta el aire\ndespacio (4s)';
+                circle.style.transform = 'scale(0.95)';
+                phase = 0;
+            }
+        };
+        runPhase();
+        breathTimer = setInterval(runPhase, 4000);
+    }
+
+    // Registro Tensión y Peso
+    async function saveBP() {
+        const sys = document.getElementById('sysInput').value;
+        const dia = document.getElementById('diaInput').value;
+        if (!sys || !dia) {
+            showToast('Introduce la tensión alta y baja');
+            return;
+        }
+        let list = (await loadData('bpList')) || [];
+        const fecha = new Date().toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+        list.unshift({ fecha, sys, dia });
+        await saveData('bpList', list);
+        document.getElementById('sysInput').value = '';
+        document.getElementById('diaInput').value = '';
+        await renderHistory();
+        showToast('Tensión guardada para el médico 🩺');
+    }
+
+    async function saveWeight() {
+        const w = document.getElementById('weightInput').value;
+        if (!w) {
+            showToast('Introduce el peso actual');
+            return;
+        }
+        let list = (await loadData('weightList')) || [];
+        const fecha = new Date().toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        list.unshift({ fecha, w });
+        await saveData('weightList', list);
+        document.getElementById('weightInput').value = '';
+        await renderHistory();
+        showToast('Peso registrado correctamente');
+    }
+
+    async function renderHistory() {
+        const bpList = (await loadData('bpList')) || [];
+        document.getElementById('bpHistory').innerHTML = bpList.map(item => 
+            `<div class="history-item"><span>${item.fecha}</span><strong>${item.sys} / ${item.dia} mmHg</strong></div>`
+        ).join('');
+
+        const wList = (await loadData('weightList')) || [];
+        document.getElementById('weightHistory').innerHTML = wList.map(item => 
+            `<div class="history-item"><span>${item.fecha}</span><strong>${item.w} kg</strong></div>`
+        ).join('');
+    }
+
+    async function exportBackup() {
+        const bpList = (await loadData('bpList')) || [];
+        const weightList = (await loadData('weightList')) || [];
+        const exportObj = { app: 'Cuidarnos en Casa v1.0.0', fechaExportacion: new Date().toISOString(), tensionArterial: bpList, peso: weightList };
+        const blob = new Blob([JSON.stringify(exportObj, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `registro_salud_${hoyStr}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast('Archivo descargado correctamente');
+    }
+
+    function openTab(tabId, btnEl) {
+        document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        btnEl.classList.add('active');
+        window.scrollTo(0, 0);
+    }
+
+    async function toggleDarkMode() {
+        document.body.classList.toggle('dark-mode');
+        const isDark = document.body.classList.contains('dark-mode');
+        await saveData('darkMode', isDark);
+    }
+
+    function openTutorial() { document.getElementById('welcomeModal').style.display = 'flex'; }
+    async function closeTutorial() {
+        await saveData('tutorialSeen', true);
+        document.getElementById('welcomeModal').style.display = 'none';
+    }
+
+    function openCravingModal() { document.getElementById('cravingModal').style.display = 'flex'; }
+    function closeCravingModal() { document.getElementById('cravingModal').style.display = 'none'; }
+
+    function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.innerText = msg;
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 3200);
+    }
+
+    window.addEventListener('DOMContentLoaded', initApp);
+</script>
+</body>
+</html>
